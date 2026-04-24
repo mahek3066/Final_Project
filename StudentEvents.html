@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Gallery</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="../css/StudentEvent.css" rel="stylesheet" />
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h2><i class="fa-solid fa-camera"></i> Student Event Admin Gallery</h2>
+            <p>Manage your Student Event gallery photos and covers</p>
+        </div>
+        <div>
+            <button class="add-photo-btn" onclick="openModal()">+ Add Photo</button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- TABLE -->
+        <table class="table-grid">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Image</th>
+                    <th>Caption</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="tableData"></tbody>
+        </table>
+
+    </div>
+
+    <!-- ADD MODAL -->
+    <div class="modal-custom" id="addModal">
+        <div class="modal-box">
+
+            <h4>Add Photo</h4>
+
+            <input type="file" id="imgInput" class="form-control mb-2">
+            <input type="text" id="captionInput" class="form-control mb-2" placeholder="Enter caption">
+
+            <button class="btn btn-success" onclick="savePhoto()">Save</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div class="modal-custom" id="editModal">
+        <div class="modal-box">
+
+            <h4>Edit Photo</h4>
+
+            <input type="hidden" id="editIndex">
+            <img id="editImg" width="100" class="mb-2">
+
+            <input type="text" id="editCaption" class="form-control mb-2">
+
+            <button class="btn btn-success" onclick="updatePhoto()">Update</button>
+            <button class="btn btn-secondary" onclick="closeEdit()">Cancel</button>
+
+        </div>
+    </div>
+
+    <div class="modal-custom" id="deleteModal">
+        <div class="modal-box text-center">
+            <h4>Are you sure?</h4>
+            <p>Delete this photo?</p>
+
+            <button class="btn btn-danger" onclick="confirmDelete()">Yes</button>
+            <button class="btn btn-secondary" onclick="closeDelete()">Cancel</button>
+
+        </div>
+    </div>
+
+    <script>
+
+        let editIndex = -1;
+
+        // OPEN MODAL
+        function openModal() {
+            document.getElementById("addModal").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("addModal").style.display = "none";
+        }
+
+        // SAVE
+        function savePhoto() {
+            let file = document.getElementById("imgInput").files[0];
+            let caption = document.getElementById("captionInput").value;
+
+            if (!file || !caption) {
+                alert("Fill all fields");
+                return;
+            }
+
+            let reader = new FileReader();
+            reader.onload = function (e) {
+
+                let data = JSON.parse(localStorage.getItem("gallery")) || [];
+
+                data.push({
+                    image: e.target.result,
+                    caption: caption,
+                    date: new Date().toLocaleDateString()
+                });
+
+                localStorage.setItem("gallery", JSON.stringify(data));
+
+                loadData();
+                closeModal();
+            }
+
+            reader.readAsDataURL(file);
+        }
+
+        // LOAD
+        function loadData() {
+            let data = JSON.parse(localStorage.getItem("gallery")) || [];
+
+            let html = "";
+
+            data.forEach((p, i) => {
+                html += `
+        <tr>
+            <td>${p.date}</td>
+            <td><img src="${p.image}"></td>
+            <td>${p.caption}</td>
+            <td>
+                <button class="action-btn edit-btn" onclick="editPhoto(${i})">
+                    <i class="fa fa-edit"></i>
+                </button>
+
+                <button class="action-btn remove-btn" onclick="deletePhoto(${i})">
+                    <i class="fa fa-trash"></i>
+                </button>
+
+                <button class="action-btn view-btn" onclick="viewImage(\`${p.image}\`, \`${p.caption}\`)">
+                   <i class="fa fa-eye"></i>
+                </button>
+               </td>
+        </tr>
+        `;
+            });
+
+            document.getElementById("tableData").innerHTML = html || "<tr><td colspan='4'>No Data</td></tr>";
+        }
+
+        // DELETE
+        let deleteIndex = -1;
+
+        function deletePhoto(i) {
+            deleteIndex = i;
+            document.getElementById("deleteModal").style.display = "flex";
+        }
+
+        function confirmDelete() {
+            let data = JSON.parse(localStorage.getItem("gallery")) || [];
+
+            data.splice(deleteIndex, 1);
+
+            localStorage.setItem("gallery", JSON.stringify(data));
+
+            loadData();
+            closeDelete();
+        }
+
+        function closeDelete() {
+            document.getElementById("deleteModal").style.display = "none";
+        }
+
+        // EDIT OPEN
+        function editPhoto(i) {
+            let data = JSON.parse(localStorage.getItem("gallery")) || [];
+
+            editIndex = i;
+
+            document.getElementById("editImg").src = data[i].image;
+            document.getElementById("editCaption").value = data[i].caption;
+
+            document.getElementById("editModal").style.display = "flex";
+        }
+
+        function closeEdit() {
+            document.getElementById("editModal").style.display = "none";
+        }
+
+        // UPDATE
+        function updatePhoto() {
+            let data = JSON.parse(localStorage.getItem("gallery")) || [];
+
+            data[editIndex].caption = document.getElementById("editCaption").value;
+
+            localStorage.setItem("gallery", JSON.stringify(data));
+
+            loadData();
+            closeEdit();
+        }
+        function openGallery() {
+            window.location.href = "Studentpage.html";
+        }
+
+
+        function viewImage(image, title) {
+
+            localStorage.setItem("selectedImage", image);
+            localStorage.setItem("selectedTitle", title);
+
+            window.location.href = "Studentpage.html";
+        }
+        // INIT
+        window.onload = function () {
+            loadData();
+        };
+    </script>
+
+</body>
+</html>

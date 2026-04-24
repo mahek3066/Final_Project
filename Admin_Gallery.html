@@ -1,0 +1,332 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Photo Gallery</title>
+
+    <!-- Bootstrap 5 (only added) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="Admin_Gallery.css" />
+</head>
+
+<body>
+
+    <div class="box">
+
+        <!-- HEADER -->
+        <div class="header-wrapper">
+            <h2>⚙️ Admin - Photo Gallery</h2>
+            <button class="btn green" onclick="openAddPhotoModal()">
+                <i class="fas fa-plus"></i> Add Gallery Photo
+            </button>
+        </div>
+
+        <div id="msg" class="msg"></div>
+
+        <div class="dashboard-cards">
+
+            <div class="card">
+                <h4>All Photos</h4>
+                <h2 id="allCount">0</h2>
+            </div>
+
+            <div class="card">
+                <h4>College Event</h4>
+                <h2 id="eventCount">0</h2>
+            </div>
+
+            <div class="card">
+                <h4>Achievement</h4>
+                <h2 id="achievementCount">0</h2>
+            </div>
+
+        </div>
+        <!-- Gallery List -->
+        <div class="gallery-list">
+
+            <table class="gallery-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Image</th>
+                        <th>Caption</th>
+                        <th>Category</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="photoList"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ADD MODAL -->
+    <div id="addPhotoModal" class="add-photo-modal">
+        <div class="add-photo-box">
+            <h3>📸 Add New Gallery Photo</h3>
+
+            <div class="form-group">
+                <label>Select Photo:</label>
+                <input type="file" id="photoInput" accept="image/*">
+                <div id="photoError" class="error-text">⚠️ Please select a photo!</div>
+            </div>
+
+            <div class="form-group">
+                <label>Write Caption:</label>
+                <textarea id="captionInput"></textarea>
+                <div id="captionError" class="error-text">⚠️ Please write a caption!</div>
+            </div>
+            <div class="form-group">
+                <label>Select Category:</label>
+                <select id="categoryInput">
+                    <option value="College Event">College Event</option>
+                    <option value="Achievement">Achievement</option>
+                </select>
+            </div>
+
+            <div class="add-photo-actions">
+                <button class="btn gray" onclick="closeAddPhotoModal()">Cancel</button>
+                <button class="btn green" onclick="savePhoto()">💾 Save Photo</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div id="editPhotoModal" class="edit-photo-modal">
+        <div class="edit-photo-box">
+            <h3>✏️ Edit Photo Details</h3>
+
+            <input type="hidden" id="editPhotoId">
+
+            <div class="form-group">
+                <label>Current Image:</label>
+                <img id="editImagePreview" class="preview-image">
+            </div>
+
+            <div class="form-group">
+                <label>Caption:</label>
+                <textarea id="editCaptionInput"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Category:</label>
+                <select id="editCategoryInput">
+                    <option value="College Event">College Event</option>
+                    <option value="Achievement">Achievement</option>
+                </select>
+            </div>
+
+            <!-- NEW STATUS -->
+
+            <div class="edit-photo-actions">
+                <button class="btn gray" onclick="closeEditModal()">Cancel</button>
+                <button class="btn green" onclick="saveEditPhoto()">💾 Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE MODAL -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>🗑️ Delete Image</h3>
+            <p>Are you sure?</p>
+
+            <div class="modal-buttons">
+                <button class="btn gray" onclick="closeModal()">Cancel</button>
+                <button class="btn red" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW MODAL -->
+    <div id="viewModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3><i class="fa fa-eye"></i> View Photo</h3>
+
+            <div style="text-align:center;">
+                <img id="viewImg" style="max-width:100%; border-radius:10px;">
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn gray" onclick="closeViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let deleteId = null;
+        let editId = null;
+
+        function showMsg(text) {
+            let m = document.getElementById('msg');
+            m.innerText = text;
+            m.className = 'msg show';
+            setTimeout(() => m.className = 'msg', 2000);
+        }
+
+        function openAddPhotoModal() {
+            document.getElementById('addPhotoModal').classList.add('show');
+        }
+
+        function closeAddPhotoModal() {
+            document.getElementById('addPhotoModal').classList.remove('show');
+        }
+
+        function savePhoto() {
+            let file = document.getElementById('photoInput').files[0];
+            let caption = document.getElementById('captionInput').value;
+            const category = document.getElementById('categoryInput').value;
+
+            if (!file || !caption) {
+                alert("All fields required");
+                return;
+            }
+
+            let reader = new FileReader();
+
+            reader.onload = function (e) {
+
+                const photo = {
+                    id: Date.now(),
+                    image: e.target.result,
+                    caption: caption,
+                    category: category,
+                    date: new Date().toISOString().split('T')[0]
+                };
+
+                let data = JSON.parse(localStorage.getItem('Gallery_photo') || '[]');
+                data.unshift(photo);
+                localStorage.setItem('Gallery_photo',JSON.stringify(data));
+
+                loadPhotos();
+                showMsg("Photo Saved");
+                closeAddPhotoModal();
+            }
+
+            reader.readAsDataURL(file);
+        }
+
+        function loadPhotos() {
+            let data = JSON.parse(localStorage.getItem('Gallery_photo') || '[]');
+ 
+
+            let html = '';
+
+            if (data.length == 0) {
+                html = '<tr><td colspan="5">No Data</td></tr>';
+            } else {
+                data.forEach(p => {
+                    html += `
+                    <tr>
+                        <td>${p.date}</td>
+                        <td><img src="${p.image}" width="80"></td>
+                        <td>${p.caption}</td>
+                        <td>${p.category || 'College Event'}</td>
+
+
+                        <td>
+                            <button class="btn orange action-btn" onclick="openEditModal(${p.id})">
+                                     <i class="fa fa-edit"></i>
+                            </button>
+
+                            <button class="btn red action-btn" onclick="openDeleteModal(${p.id})">
+                                     <i class="fa fa-trash"></i>
+                           </button>
+
+                             <a href="Gallery_photo.html" class="btn blue action-btn">
+                                        <i class="fa-solid fa-eye"></i>
+                                </a>
+                             </td>
+                    </tr>`;
+                });
+            }
+
+            document.getElementById('photoList').innerHTML = html;
+            updateCounts(data);
+            
+        }
+
+        function updateCounts(photos) {
+
+            let all = photos.length;
+
+            let event = photos.filter(p => p.category === "College Event").length;
+
+            let achievement = photos.filter(p => p.category === "Achievement").length;
+
+            document.getElementById("allCount").innerText = all;
+            document.getElementById("eventCount").innerText = event;
+            document.getElementById("achievementCount").innerText = achievement;
+
+
+        }   
+        
+
+        function openDeleteModal(id) {
+            deleteId = id;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+        }
+
+        function confirmDelete() {
+            let data = JSON.parse(localStorage.getItem('Gallery_photo') || '[]');
+            data = data.filter(p => p.id !== deleteId);
+            localStorage.setItem('Gallery_photo', JSON.stringify(data));
+            loadPhotos();
+            closeModal();
+        }
+
+        function openEditModal(id) {
+            let data = JSON.parse(localStorage.getItem('Gallery_photo') || '[]'); 
+            let p = data.find(x => x.id === id);
+
+            if (!p) return;
+
+            editId = id;
+
+            document.getElementById('editImagePreview').src = p.image;
+            document.getElementById('editCaptionInput').value = p.caption;
+            document.getElementById('editCategoryInput').value = p.category || "Event";
+
+            document.getElementById('editPhotoModal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editPhotoModal').classList.remove('show');
+        }
+
+        function saveEditPhoto() { 
+            let data = JSON.parse(localStorage.getItem('Gallery_photo') || '[]');
+            let p = data.find(x => x.id === editId);
+
+            if (!p) return;
+
+            p.caption = document.getElementById('editCaptionInput').value;
+            p.category = document.getElementById('editCategoryInput').value;
+
+            localStorage.setItem('Gallery_photo', JSON.stringify(data));
+            loadPhotos();
+            closeEditModal();
+            showMsg("Updated Successfully");
+        }
+
+        loadPhotos();
+
+        
+        function openGallery(img) {
+       
+            localStorage.setItem("viewImage", img);
+            window.location.href = "Gallery_photo.html";
+        }
+    </script>
+
+</body>
+</html>
