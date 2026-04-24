@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Creative Blog Writer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background: linear-gradient(135deg, #74b9ff, #00cec9);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .main-card {
+    max-width: 1000px;
+    margin: 40px auto;
+    border-radius: 12px;
+    padding: 30px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    color: #0984e3;
+  }
+
+  /* Header image */
+  .header-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 3px solid #74b9ff;
+    margin-bottom: 20px;
+  }
+
+  /* Input focus colors */
+  input:focus {
+    border-color: #0984e3 !important;
+    box-shadow: 0 0 5px rgba(9,132,227,0.5);
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  textarea:focus {
+    border-color: #00b894 !important;
+    box-shadow: 0 0 5px rgba(0,184,148,0.5);
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  /* Textarea styling */
+  textarea {
+    resize: vertical;
+    font-size: 16px;
+    line-height: 1.6;
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  footer {
+    font-size: 13px;
+    color: #6c757d;
+  }
+
+  /* Image gallery */
+  #imageGallery img {
+    max-width: 150px;
+    border: 2px solid #74b9ff;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="card main-card shadow-lg">
+
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+      <img src="Images/blogwrite.jpg" alt="Creative blogging image" class="header-image">
+      <h1 class="m-0">Creative Blog Writer</h1>
+      <p class="text-muted mt-2">Unleash your imagination and craft stories that inspire</p>
+    </div>
+
+    <!-- BLOG TITLE -->
+    <input type="text" class="form-control form-control-lg mb-3" id="blogTitle" placeholder="Your Blog Title...">
+
+    <!-- TOOLBAR -->
+    <div class="d-flex flex-wrap gap-2 mb-3">
+      <label class="btn btn-outline-primary btn-sm">
+        📷 Add Image
+        <input type="file" id="imageUpload" hidden multiple>
+      </label>
+      <button class="btn btn-success btn-sm" onclick="saveDraft()">💾 Save Draft</button>
+      <button class="btn btn-danger btn-sm" onclick="clearAll()">🗑️ Clear</button>
+    </div>
+
+    <!-- IMAGE GALLERY -->
+    <div class="d-flex flex-wrap gap-2 mb-3" id="imageGallery"></div>
+
+    <!-- INSPIRATION -->
+    <div class="alert alert-info">
+      <strong>💡 Writing Inspiration</strong>
+      <ul class="mb-0 mt-2">
+        <li>Describe a scene using all five senses</li>
+        <li>Write from a new perspective</li>
+        <li>Use metaphors to bring ideas to life</li>
+      </ul>
+    </div>
+
+    <!-- CONTENT -->
+    <textarea class="form-control mb-3" id="blogContent" placeholder="Start writing your blog here..." rows="10"></textarea>
+
+    <!-- WORD COUNT -->
+    <div class="text-end text-muted mb-3" id="wordCount">Word count: 0</div>
+
+    <!-- EXPORT -->
+    <div class="text-center">
+      <button class="btn btn-primary px-4" onclick="exportBlog()">📤 Export Blog</button>
+    </div>
+
+    <footer class="text-center mt-4">
+      Simple • Creative • Distraction-free writing
+    </footer>
+
+  </div>
+</div>
+
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const blogTitle = document.getElementById('blogTitle');
+const blogContent = document.getElementById('blogContent');
+const wordCount = document.getElementById('wordCount');
+const imageUpload = document.getElementById('imageUpload');
+const imageGallery = document.getElementById('imageGallery');
+
+// Load saved draft
+if(localStorage.getItem('blogTitle')) blogTitle.value = localStorage.getItem('blogTitle');
+if(localStorage.getItem('blogContent')) blogContent.value = localStorage.getItem('blogContent');
+if(localStorage.getItem('blogImages')){
+  const savedImages = JSON.parse(localStorage.getItem('blogImages'));
+  savedImages.forEach(src => addImageToGallery(src));
+}
+
+// Word count
+blogContent.addEventListener('input', () => {
+  const words = blogContent.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+  wordCount.textContent = `Word count: ${words}`;
+});
+
+// Image upload
+imageUpload.addEventListener('change', () => {
+  Array.from(imageUpload.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      addImageToGallery(reader.result);
+      saveImages();
+    };
+    reader.readAsDataURL(file);
+  });
+});
+
+// Add image to gallery
+function addImageToGallery(src){
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = 'Uploaded blog image';
+  img.onclick = () => {
+    if(confirm('Remove this image?')) { img.remove(); saveImages(); }
+  };
+  imageGallery.appendChild(img);
+}
+
+// Save images to localStorage
+function saveImages(){
+  const images = Array.from(imageGallery.querySelectorAll('img')).map(img => img.src);
+  localStorage.setItem('blogImages', JSON.stringify(images));
+}
+
+// Save draft
+function saveDraft(){
+  localStorage.setItem('blogTitle', blogTitle.value);
+  localStorage.setItem('blogContent', blogContent.value);
+  saveImages();
+  alert('Draft saved!');
+}
+
+// Clear all
+function clearAll(){
+  if(confirm('Are you sure you want to clear everything?')){
+    blogTitle.value = '';
+    blogContent.value = '';
+    imageGallery.innerHTML = '';
+    localStorage.removeItem('blogTitle');
+    localStorage.removeItem('blogContent');
+    localStorage.removeItem('blogImages');
+    wordCount.textContent = 'Word count: 0';
+  }
+}
+
+// Export blog
+function exportBlog(){
+  const title = blogTitle.value || 'Untitled Blog';
+  const content = blogContent.value || 'No content.';
+  const imagesHTML = Array.from(imageGallery.querySelectorAll('img')).map(img => `<img src="${img.src}" style="max-width:100%;margin:10px 0;">`).join('');
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head><meta charset="UTF-8"><title>${title}</title></head>
+    <body>
+      <h1>${title}</h1>
+      ${imagesHTML}
+      <p>${content.replace(/\n/g,'<br>')}</p>
+    </body>
+    </html>`;
+  const blob = new Blob([htmlContent], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${title.replace(/[^a-z0-9]/gi,'_').toLowerCase()}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>

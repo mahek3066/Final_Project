@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notice Details</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Oswald', sans-serif;
+            background: #f0f8ff;
+            margin: 0;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg,#1e3d59,#3a6ea5);
+            color: #fff;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .notice-wrapper {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .notice-detail-card {
+            background-color: #e6f2f1;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+            .notice-detail-card h2 {
+                color: #1e3d59;
+                margin-bottom: 15px;
+            }
+
+            .notice-detail-card p {
+                color: #2a7f62;
+                font-size: 1.05rem;
+                line-height: 1.7;
+            }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 22px;
+            background: linear-gradient(135deg,#1e3d59,#3a6ea5);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 30px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page-header">
+        <h1>Notice Details</h1>
+        <p>Official College Announcement</p>
+    </div>
+
+    <div class="notice-wrapper">
+        <div class="notice-detail-card">
+            <h2 id="noticeTitle">Loading...</h2>
+            <p id="noticeContent"></p>
+
+            <a href="index.html" class="back-btn">← Back to Notice Board</a>
+        </div>
+    </div>
+
+    <script>
+        
+        const params = new URLSearchParams(window.location.search);
+        const id = parseInt(params.get("id")); 
+
+        // Notices Data
+        const notices = {
+            1: {
+                title: "Admission Open for 2025–26",
+                content: "Admissions are now open for Undergraduate and Postgraduate courses."
+            },
+            2: {
+                title: "Semester Exam Schedule Released",
+                content: "The semester examination schedule has been officially released."
+            },
+            3: {
+                title: "New Workshops Coming Soon",
+                content: "The college will organize new technical workshops soon."
+            },
+            4: {
+                title: "Library Timings Updated",
+                content: "Library timings updated: 8:00 AM to 6:00 PM."
+            },
+            5: {
+                title: "Student Council Elections 2026",
+                content: "Student council elections will be conducted next month."
+            },
+            6: {
+                title: "Internship Opportunities",
+                content: "Companies are offering internships for BCA students."
+            },
+            7: {
+                title: "Guest Lecture on AI",
+                content: "A guest lecture on AI & Machine Learning will be held."
+            },
+            8: {
+                title: "Sports Day Announcement",
+                content: "Annual sports day will be organized next month."
+            },
+            9: {
+                title: "Scholarship Applications Open",
+                content: "Students can apply for scholarships now."
+            },
+            10: {
+                title: "Tech Fest Registration",
+                content: "Registration for tech fest is now open."
+            }
+        };
+
+        // Display Notice
+        if (!id || !notices[id]) {
+            document.getElementById("noticeTitle").innerText = "Notice Not Found";
+            document.getElementById("noticeContent").innerText =
+                "Please select a valid notice from the Notice Board.";
+        } else {
+            document.getElementById("noticeTitle").innerText = notices[id].title;
+            document.getElementById("noticeContent").innerText = notices[id].content;
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>College Notice Board</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f9fb;
+    margin: 0;
+}
+
+header {
+    background: linear-gradient(to right, #0a6ebd, #2bb673);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.notice-item {
+    display: block;
+    padding: 15px;
+    margin-bottom: 10px;
+    text-decoration: none;
+    color: #0a6ebd;
+    background: #eaf6f2;
+    border-left: 5px solid #2bb673;
+    font-weight: bold;
+}
+
+.notice-item:hover {
+    background: #d6f0e6;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>College Notice Board</h1>
+    <p>Official Announcements & Updates</p>
+</header>
+
+<div class="container" id="noticeList">
+    <!-- Notices loaded dynamically -->
+</div>
+
+<script>
+const notices = [
+ { id: 1, title: "📌 Admission Open for 2025-26" },
+ { id: 2, title: "📌 Semester Exam Schedule Released" },
+ { id: 3, title: "📌 New Workshops Coming Soon" },
+ { id: 4, title: "📌 Library Timings Updated" },
+ { id: 5, title: "📌 Student Council Elections 2026" },
+ { id: 6, title: "📌 Internship Opportunities for BCA Students" },
+ { id: 7, title: "📌 Guest Lecture on AI & Machine Learning" },
+ { id: 8, title: "📌 Sports Day Announcement" },
+ { id: 9, title: "📌 Scholarship Applications Open" },
+ { id: 10, title: "📌 Annual Tech Fest Registration" }
+];
+
+const noticeList = document.getElementById("noticeList");
+
+notices.forEach(n => {
+    const a = document.createElement("a");
+    a.href = "notice-details.html?id=" + n.id;
+    a.className = "notice-item";
+    a.textContent = n.title;
+    noticeList.appendChild(a);
+});
+</script>
+
+</body>
+</html>
