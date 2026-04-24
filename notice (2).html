@@ -1,0 +1,288 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCA Department - Notice Board</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="Notice.css" />
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- Header -->
+        <div class="notice-header">
+            <h1><i class="fas fa-bullhorn"></i> Department Notice Board</h1>
+            <p>Stay updated with the latest announcements from BCA Department</p>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <input type="text" placeholder="Search notices...">
+                <i class="fas fa-search"></i>
+            </div>
+            <button class="filter-btn active" data-category="all"><i class="fas fa-filter"></i> All</button>
+            <button class="filter-btn" data-category="academic"><i class="fas fa-book"></i> Academic</button>
+            <button class="filter-btn" data-category="event"><i class="fas fa-calendar-alt"></i> Events</button>
+            <button class="filter-btn" data-category="exam"><i class="fas fa-graduation-cap"></i> Exams</button>
+            <button class="filter-btn" data-category="general"><i class="fas fa-info-circle"></i> General</button>
+        </div>
+
+        <!-- Table Grid -->
+        <div class="notice-table-container">
+            <table class="notice-table">
+                <!-- Table Header -->
+                <thead class="table-header">
+                    <tr>
+                        <th>Date</th>
+                        <th>Notice Title</th>
+                        <th>Category</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <!-- Table Body -->
+                <tbody id="noticeTableBody">
+                    <!-- Rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Notice Detail Modal -->
+    <div class="modal" id="noticeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-alt"></i> Notice Details</h2>
+                <button class="close-modal" onclick="closeModal()">&times;</button>
+            </div>
+
+            <!-- PDF Preview Container - Full Screen -->
+            <div class="pdf-preview" id="pdfPreviewContainer">
+                <embed src="" type="application/pdf" width="100%" height="100%">
+            </div>
+
+            <!-- Download Button Container - Centered at Bottom -->
+            <div class="btn-download-container">
+                <button class="btn-download" onclick="downloadFile()">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Functionality -->
+    <script>
+        // ============================================
+        // NOTICE BOARD - READ FROM LOCALSTORAGE
+        // ============================================
+
+        // 1. Load data from LocalStorage
+        let notices = JSON.parse(localStorage.getItem('notices')) || [];
+        let currentNotice = null;
+        let pdfBlobUrl = null;
+
+        // 2. DOM Elements
+        const tableBody = document.getElementById('noticeTableBody');
+        const searchInput = document.querySelector('.search-box input');
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const modal = document.getElementById('noticeModal');
+        const pdfPreviewContainer = document.getElementById('pdfPreviewContainer');
+
+        // 3. Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable(notices);
+        });
+
+        // 4. Render Table Function
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 20px;">No notices found.</td></tr>';
+                return;
+            }
+
+            data.forEach(notice => {
+                const row = document.createElement('tr');
+                row.classList.add('table-row');
+
+                let badgeClass = notice.category;
+                if (notice.isUrgent) badgeClass = 'urgent';
+
+                row.innerHTML = `
+            <td class="col-date">
+                <i class="fas fa-calendar-alt"></i> ${formatDate(notice.date)}
+            </td>
+            <td class="col-title">
+                <span>${notice.title}</span>
+                ${notice.isUrgent ? '<i class="fas fa-exclamation-triangle urgent-icon" title="Urgent Notice"></i>' : ''}
+            </td>
+            <td class="col-category">
+                <span class="category-badge ${badgeClass}">${notice.category}</span>
+            </td>
+            <td class="col-action">
+                <a href="#" class="btn-view" onclick="viewNotice(${notice.id})">View</a>
+            </td>
+        `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 5. Helper: Format Date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // 6. Helper: Extract Base64 from Data URL
+        function extractBase64(dataURL) {
+            return dataURL.split(',')[1];
+        }
+
+        // 7. Helper: Convert Base64 to Binary String
+        function base64ToBinary(base64) {
+            return atob(base64);
+        }
+
+        // 8. View Notice Function (Opens Modal with PDF)
+        function viewNotice(id) {
+            const notice = notices.find(n => n.id === id);
+            if (notice) {
+                currentNotice = notice;
+
+                // Use actual PDF content if available
+                let pdfContent = '';
+                if (notice.fileContent) {
+                    pdfContent = notice.fileContent;
+                } else {
+                    pdfContent = generatePDF(notice.title);
+                }
+
+                // Revoke previous blob URL if exists
+                if (pdfBlobUrl) {
+                    URL.revokeObjectURL(pdfBlobUrl);
+                }
+
+                // Convert Base64 to Blob
+                const base64 = extractBase64(pdfContent);
+                const binaryString = base64ToBinary(base64);
+                const blob = new Blob([binaryString], { type: 'application/pdf' });
+                pdfBlobUrl = URL.createObjectURL(blob);
+
+                // Use embed instead of iframe (less toolbar)
+                pdfPreviewContainer.innerHTML = `
+            <embed src="${pdfBlobUrl}" type="application/pdf" width="100%" height="100%" oncontextmenu="return false;">
+        `;
+
+                // Disable right-click on PDF
+                const embed = pdfPreviewContainer.querySelector('embed');
+                if (embed) {
+                    embed.oncontextmenu = function () { return false; };
+                }
+
+                // Show modal
+                modal.classList.add('active');
+            }
+        }
+
+        // 9. Helper: Generate PDF Content (Fallback)
+        function generatePDF(title) {
+            return `%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 100 >>
+stream
+BT
+/F1 24 Tf
+100 700 Td
+(${title}) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000214 00000 n 
+0000000364 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+441
+%%EOF`;
+        }
+
+        // 10. Close Modal Function
+        function closeModal() {
+            modal.classList.remove('active');
+            currentNotice = null;
+            if (pdfBlobUrl) {
+                URL.revokeObjectURL(pdfBlobUrl);
+                pdfBlobUrl = null;
+            }
+            pdfPreviewContainer.innerHTML = '';
+        }
+
+        // 11. Download File Function
+        function downloadFile() {
+            if (currentNotice && pdfBlobUrl) {
+                const link = document.createElement('a');
+                link.href = pdfBlobUrl;
+                link.download = currentNotice.file || 'notice.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // 12. Close Modal When Clicking Outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // 13. Search Functionality
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = notices.filter(n =>
+                n.title.toLowerCase().includes(searchTerm)
+            );
+            renderTable(filtered);
+        });
+
+        // 14. Filter Button Functionality
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const category = btn.getAttribute('data-category');
+
+                if (category === 'all') {
+                    renderTable(notices);
+                } else {
+                    const filtered = notices.filter(n => n.category === category);
+                    renderTable(filtered);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

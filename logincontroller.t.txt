@@ -1,0 +1,276 @@
+using Admin_login.Models;
+using Admin_login.Utilities;
+using Microsoft.AspNetCore.Connections;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Mail;
+using System.Security.Claims;
+using System.Text;
+
+namespace Admin_login.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class LoginController : BaseController
+    {
+        private readonly IConfiguration _configuration;
+        private readonly BaseConnection _baseConnection;
+
+        public LoginController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _baseConnection = new BaseConnection();
+        }
+
+        // POST: api/Admin/register
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] AdminRegister admin)
+        {
+            if (admin == null)
+                return Error("Invalid admin data.");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            if (admin.AdminName.ToLower() == "string" ||
+                     admin.Email.ToLower() == "user@example.com" ||
+                         admin.Password.ToLower() == "string")
+            {
+                return Error("Please enter real values instead of default Swagger values.", 400);
+            }
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand("Insert_Admin", conn))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                    // Hash password
+                    PasswordHasher<string> hasher = new PasswordHasher<string>();
+                    string hashedPassword = hasher.HashPassword(null, admin.Password);
+
+                    cmd.Parameters.AddWithValue("@AdminName", admin.AdminName);
+                    cmd.Parameters.AddWithValue("@Email", admin.Email);
+                    cmd.Parameters.AddWithValue("@PasswordHash", hashedPassword);
+
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return Success(new
+                            {
+                                AdminId = reader["AdminId"],
+                                AdminName = reader["AdminName"],
+                                Email = reader["Email"],
+                                CreatedAt = reader["CreatedAt"],
+                                CreatedBy = reader["CreatedBy"]
+                            }, "Admin Registered Successfully");
+                        }
+                    }
+                }
+
+                return Error("Unable to register admin.");
+            }
+            catch (SqlException ex)
+            {
+                if (ex.Number == 2627)
+                    return Error("Email already exists.", 400);
+
+                return Error("Database error: " + ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return Error("Server error: " + ex.Message);
+            }
+        }
+
+
+
+        // POST: api/Admin/login
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] AdminLogin login)
+        {
+            if (login == null)
+                return Error("Invalid login data.");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DefaultConnection");
+                int adminId = 0;
+                string storedHash = null;
+                string adminName = null;
+
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlCommand cmd = new SqlCommand("SELECT AdminId, AdminName, PasswordHash FROM Admins WHERE Email = @Email", conn))
+                {
+                    cmd.Parameters.AddWithValue("@Email", login.Email);
+                    conn.Open();
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            adminId = (int)reader["AdminId"];
+                            adminName = reader["AdminName"].ToString();
+                            storedHash = reader["PasswordHash"].ToString();
+                        }
+                        else
+                        {
+                            return Error("Invalid Email", 401);
+                        }
+                    }
+                }
+
+                PasswordHasher<string> hasher = new PasswordHasher<string>();
+                var result = hasher.VerifyHashedPassword(null, storedHash, login.Password);
+
+                if (result != PasswordVerificationResult.Success)
+                    return Error("Invalid Password", 401);
+
+                string token = GenerateJwtToken(adminId, adminName, login.Email);
+
+                return Success(new
+                {
+                    AdminId = adminId,
+                    AdminName = adminName,
+                    Email = login.Email,
+                    Token = token
+                }, "Login Successful");
+            }
+            catch (Exception ex)
+            {
+                return Error("Server error: " + ex.Message);
+            }
+        }
+
+        // JWT Token Generation
+        private string GenerateJwtToken(int adminId, string adminName, string email)
+        {
+            var jwtSettings = _configuration.GetSection("Jwt");
+
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSettings["Key"])
+            );
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, adminName),
+                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim("AdminId", adminId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: jwtSettings["Issuer"],
+                audience: jwtSettings["Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(
+                    Convert.ToDouble(jwtSettings["ExpiresInMinutes"])
+                ),
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+        {
+            if (request == null || string.IsNullOrEmpty(request.Email))
+            {
+                return BadRequest("Email is required");
+            }
+
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+            try
+            {
+                SqlConnection conn = new SqlConnection(connectionString);
+                SqlCommand cmd = new SqlCommand("Generate_ResetToken", conn);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Email", request.Email);
+
+                await conn.OpenAsync();
+                SqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    int success = Convert.ToInt32(reader["Success"]);
+                    if (success == 0)
+                    {
+                        return NotFound("Email not found");
+                    }
+
+                    string adminName = reader["AdminName"].ToString();
+                    string resetToken = reader["ResetToken"].ToString();
+
+                    // Instead of sending email, redirect to a page with the token
+                    string redirectUrl = $"http://localhost:3000/reset-password?token={resetToken}&email={request.Email}";
+                    return Ok(new
+                    {
+                        message = "Reset token generated",
+                        redirectUrl = redirectUrl
+                    });
+                }
+
+                return BadRequest("Failed to generate reset token");
+            }
+            catch (System.Exception ex)
+            {
+                return StatusCode(500, "Server error: " + ex.Message);
+            }
+        }
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+            try
+            {
+                using SqlConnection conn = new SqlConnection(connectionString);
+                using SqlCommand cmd = new SqlCommand("Reset_AdminPassword", conn);
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                // Hash the new password
+                PasswordHasher<string> hasher = new PasswordHasher<string>();
+                string hashedPassword = hasher.HashPassword(null, request.NewPassword);
+
+                cmd.Parameters.AddWithValue("@Email", request.Email);
+                cmd.Parameters.AddWithValue("@ResetToken", request.ResetToken);
+                cmd.Parameters.AddWithValue("@NewPasswordHash", hashedPassword);
+
+                await conn.OpenAsync();
+                SqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    int success = Convert.ToInt32(reader["Success"]);
+                    if (success == 1)
+                        return Ok("Password has been reset successfully!");
+                }
+
+                return BadRequest("Invalid token or email.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Server error: " + ex.Message);
+            }
+        }
+
+    }
+        }

@@ -1,0 +1,54 @@
+﻿< !DOCTYPE html >
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+                <title>Notice Details</title>
+                <style>
+                    body {font - family: Arial; background: #f4f9fb; margin: 0; }
+                    header {background: linear-gradient(to right, #0a6ebd, #2bb673); color: white; padding: 20px; text-align: center; }
+                    .container {max - width: 900px; margin: 30px auto; background: white; padding: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+                    h2 {color: #0a6ebd; }
+                    .back {display: inline-block; margin-top: 20px; text-decoration: none; color: white; background: #2bb673; padding: 10px 15px; border-radius: 5px; }
+                    p {line - height: 1.6; margin-top: 15px; }
+                </style>
+        </head>
+        <body>
+
+            <header>
+                <h1>Notice Details</h1>
+            </header>
+
+            <div class="container">
+                <h2 id="title"></h2>
+                <p id="description"></p>
+                <a href="index.html" class="back">← Back to Notice Board</a>
+            </div>
+
+            <script>
+                const noticeData = {
+                    1: {title: "Admission Open for 2025-26", description: "Admissions are now open for Undergraduate and Postgraduate courses. Interested students are advised to apply before the deadline. Visit the admission office or official website for eligibility criteria." },
+                2: {title: "Semester Exam Schedule Released", description: "The semester examination schedule has been published. Students should check the exam dates carefully and prepare accordingly." },
+                3: {title: "New Workshops Coming Soon", description: "The college is organizing technical and soft skill workshops for students to enhance industry readiness." },
+                4: {title: "Library Timings Updated", description: "Library timings have been revised. New timings are 9:00 AM to 7:00 PM on working days." },
+                5: {title: "Student Council Elections 2026", description: "Student Council elections will be held next month. Eligible students can submit nominations." },
+                6: {title: "Internship Opportunities for BCA Students", description: "Multiple internship opportunities are available for BCA students in reputed IT companies." },
+                7: {title: "Guest Lecture on AI & Machine Learning", description: "A guest lecture by industry experts on AI & ML will be conducted in the seminar hall." },
+                8: {title: "Sports Day Announcement", description: "Annual Sports Day will be organized soon. Students are encouraged to participate." },
+                9: {title: "Scholarship Applications Open", description: "Scholarship forms are now available for eligible students. Apply before the last date." },
+                10: {title: "Annual Tech Fest Registration", description: "Registrations for the Annual Tech Fest are open. Participate and showcase your talent." }
+};
+
+                const params = new URLSearchParams(window.location.search);
+                const id = params.get("id");
+
+                if (noticeData[id]) {
+                    document.getElementById("title").innerText = noticeData[id].title;
+                document.getElementById("description").innerText = noticeData[id].description;
+} else {
+                    document.getElementById("title").innerText = "Notice Not Found";
+                document.getElementById("description").innerText = "Invalid notice ID.";
+}
+            </script>
+
+        </body>
+    </html>

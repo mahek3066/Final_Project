@@ -1,0 +1,113 @@
+﻿body {
+    font-family: Arial, sans-serif !important;
+    background-color: #f5f5f5 !important;
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* Header */
+.header {
+    background-color: #1e3d59 !important;
+    color: white !important;
+    text-align: center;
+    padding: 50px 30px !important;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    position: relative !important; /* Button position માટે */
+}
+
+    .header h1 {
+        font-size: 42px !important;
+        font-weight: bold !important;
+        margin: 0;
+    }
+
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Add Button */
+.add-btn {
+    position: absolute !important;
+    right: 30px;
+    background-color: #27ae60 !important;
+    color: white !important;
+    padding: 12px 25px !important;
+    text-decoration: none !important;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+}
+
+/* Table Design - તમારા જૂના લુક મુજબ */
+.table {
+    margin-bottom: 0 !important;
+    border-collapse: collapse !important;
+}
+
+thead th {
+    background-color: #1e3d59 !important;
+    color: white !important;
+    padding: 18px 15px !important;
+    font-size: 16px !important;
+    border: none !important;
+}
+
+tbody td {
+    padding: 18px 15px !important;
+    border-bottom: 1px solid #ddd !important;
+    font-size: 15px !important;
+    vertical-align: middle !important;
+}
+
+/* Row Hover & Zebra Stripe */
+tbody tr:nth-child(even) {
+    background-color: #f8f9fa !important;
+}
+
+tbody tr:hover {
+    background-color: #e8f4f8 !important;
+}
+
+/* Action Buttons */
+.view-btn {
+    background-color: #3a6ea5 !important;
+    color: white !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    border: none !important;
+    transition: 0.3s;
+}
+
+.download-btn {
+    background-color: #27ae60 !important;
+    color: white !important;
+    padding: 10px 20px !important;
+    border-radius: 5px !important;
+    border: none !important;
+}
+
+/* Section Title */
+.section-title {
+    text-align: center;
+    color: #1e3d59 !important;
+    margin-bottom: 30px;
+    font-size: 28px !important;
+    font-weight: bold;
+}
+
+/* Modal Fix for Bootstrap */
+.modal-content {
+    border-radius: 8px !important;
+    border: none !important;
+}
+
+.modal-header {
+    background-color: #fff;
+    border-bottom: none !important;
+}

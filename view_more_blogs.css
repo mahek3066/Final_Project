@@ -1,0 +1,117 @@
+
+   body {
+            font-family: 'Oswald', sans-serif;
+            background-color: #f0f8ff;
+    }
+
+        /* Header */
+        .page-header {
+              background: linear-gradient(135deg, #1e3d59, #3a6ea5);
+            color: #fff !important;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+            .page-header h1 {
+                font-weight: 700;
+                color: #fff !important;
+            }
+            .page-header p {
+                color: #ffffff !important;
+            }
+
+        /* Blog Cards */
+        .blog-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background-color: #e6f2f1;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .blog-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .blog-card .card-title {
+            color: #1e3d59;
+            font-weight: 600;
+        }
+
+        .blog-card .card-text {
+            color: #2a7f62 !important;
+        }
+
+        .blog-card .card-footer {
+            background: none;
+            border-top: none;
+            font-size: 0.85rem;
+           
+            color: #555;
+        }
+           
+            .blog-card .card-body,
+            .blog-card .card-footer {
+                background-color: #e9fdf5 !important;
+            }
+        /* End Message */
+        .end-message {
+            margin-top: 50px;
+            padding: 25px;
+             background: linear-gradient(135deg, #1e3d59, #3a6ea5);
+            color: #fff;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        /* Back Button */
+        .back-btn {
+            margin-top: 30px;
+		
+        }
+/* Buttons at the bottom */
+        .action-buttons {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .action-buttons a {
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .action-buttons a.btn-primary {
+            background: linear-gradient(135deg, #1e3d59, #3a6ea5);
+            color: #fff;
+            border: none;
+        }
+        .action-buttons a.btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            text-decoration: none;
+        }
+        .action-buttons a.btn-outline-primary {
+            border: 2px solid #1e3d59;
+            color: #1e3d59;
+            background: #fff;
+        }
+        .action-buttons a.btn-outline-primary:hover {
+            background: #1e3d59;
+            color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+
+
