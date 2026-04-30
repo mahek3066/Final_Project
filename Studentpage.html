@@ -9,7 +9,7 @@
 
 <body>
     <!--header wil load heare-->
-    <div id="header-container"></div>
+    <!--<div id="header-container"></div>-->
 
     <!-- Heading Section -->
     <div class="hero">
@@ -21,7 +21,7 @@
         <h2><b>About The Events</b></h2>
         <p class="font">
             SMT K. B. Parekh College of Computer Science proudly hosts student-led events
-            like Teachers Day, Cultural Day, Fresher’s Parties, competitions, and Farewell celebrations.
+            like Teachers’ Day, Cultural Day, Fresher’s Parties, competitions, and Farewell celebrations.
             These events promote creativity, teamwork, and strong bonds among students and faculty.
         </p>
     </div>
@@ -51,95 +51,86 @@
                 position:absolute; top:20px; right:30px;
                 font-size:30px; color:white; cursor:pointer;">&times;</span>
 
-            <img id="studentImg" style="max-width:90%; max-height:90%;">
+        <img id="studentImg" style="max-width:90%; max-height:90%;">
     </div>
     <!--footer-->
-    <div id="footer-container"></div>
-
-    <!--js-->
-    <script src="script.js"></script>
+    <!--<div id="footer-container"></div>-->
 
     <script>
+
         function loadGallery() {
 
             const galleryContainer = document.getElementById("galleryContainer");
-            let photos = [];
 
-            const stored = localStorage.getItem("gallery");
+     
+            let photos = JSON.parse(localStorage.getItem("gallery")) || [];
 
-            if (stored) {
-                photos = JSON.parse(stored);
-            }
-
+        
             if (photos.length === 0) {
                 galleryContainer.innerHTML = "<p class='text-center'>No Photos Available</p>";
                 return;
             }
 
+            // Render images
             galleryContainer.innerHTML = photos.map(photo => `
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                        <div class="card shadow h-100">
 
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                    <div class="card shadow h-100">
-
-                       <img src="${photo.image}"
-                           class="card-img-top"
-                          style="height:250px;object-fit:cover; cursor:pointer"
-                         onclick="openLightbox('${photo.image}')">
+                            <img src="${photo.image}"
+                                 class="card-img-top preview-img"
+                                 style="height:250px;object-fit:cover;cursor:pointer">
 
                             <div class="card-body">
                                 <p class="card-text fw-semibold">
-                                    ${photo.caption}
+                                    ${photo.caption || ""}
                                 </p>
                             </div>
 
+                        </div>
                     </div>
-                </div>
-
                 `).join("");
-
         }
 
+        // PAGE LOAD
         document.addEventListener("DOMContentLoaded", function () {
 
-         
+
             loadGallery();
+
+
+            document.addEventListener("click", function (e) {
+
+                if (e.target.classList.contains("preview-img")) {
+
+                    let lightbox = document.createElement("div");
+
+                    lightbox.style.position = "fixed";
+                    lightbox.style.top = "0";
+                    lightbox.style.left = "0";
+                    lightbox.style.width = "100%";
+                    lightbox.style.height = "100%";
+                    lightbox.style.background = "rgba(0,0,0,0.8)";
+                    lightbox.style.display = "flex";
+                    lightbox.style.justifyContent = "center";
+                    lightbox.style.alignItems = "center";
+                    lightbox.style.zIndex = "999";
+
+                    lightbox.innerHTML = `
+                            <span style="position:absolute;top:20px;right:30px;font-size:30px;color:white;cursor:pointer;">&times;</span>
+                            <img src="${e.target.src}" style="max-width:90%; max-height:90%; border-radius:10px;">
+                        `;
+
+                    lightbox.querySelector("span").onclick = () => lightbox.remove();
+
+                    document.body.appendChild(lightbox);
+                }
+
+            });
+
         });
 
-         
-            function openLightbox(imgSrc) {
-
-    let lightbox = document.createElement("div");
-
-    lightbox.style.position = "fixed";
-    lightbox.style.top = "0";
-    lightbox.style.left = "0";
-    lightbox.style.width = "100%";
-    lightbox.style.height = "100%";
-    lightbox.style.background = "rgba(0,0,0,0.8)";
-    lightbox.style.display = "flex";
-    lightbox.style.justifyContent = "center";
-    lightbox.style.alignItems = "center";
-    lightbox.style.zIndex = "999";
-
-    lightbox.innerHTML = `
-        <span style="
-            position:absolute;
-            top:20px;
-            right:30px;
-            font-size:30px;
-            color:white;
-            cursor:pointer;
-        ">&times;</span>
-
-        <img src="${imgSrc}" style="max-width:90%; max-height:90%; border-radius:10px;">
-    `;
-
-    // close
-    lightbox.querySelector("span").onclick = () => lightbox.remove();
-
-    document.body.appendChild(lightbox);
-    }
-</script>
-
+    </script>
+    <!--js-->
+    <!--<script src="script.js"></script>-->
 </body>
 </html>

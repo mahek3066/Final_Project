@@ -1,0 +1,89 @@
+﻿
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    text-align: center;
+}
+
+.hero {
+    background: #1e3d59;
+    color: white;
+    padding: 40px 20px;
+}
+
+.about {
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: auto;
+    color: #1e3d59;
+}
+
+.font {
+    color: #3a6ea5;
+}
+
+.gallery {
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+        text-align: center;
+    }
+
+    .hero {
+        background: #1e3d59;
+        color: white;
+        padding: 40px 20px;
+    }
+
+    .about {
+        padding: 40px 20px;
+        max-width: 800px;
+        margin: auto;
+        color: #1e3d59;
+    }
+
+    .font {
+        color: #3a6ea5;
+    }
+
+    .gallery {
+        padding: 40px 20px;
+        background: white;
+    }
+        /* Keep your original heading background */
+        .gallery h2 {
+            background: #3a6ea5;
+            color: white;
+            padding: 20px;
+        }
+        /* Image hover effect */
+        .gallery img {
+            transition: 0.3s;
+        }
+
+            .gallery img:hover {
+                transform: scale(1.05);
+            }
+
+    padding: 40px 20px;
+    background: white;
+}
+
+    /* Keep your original heading background */
+    .gallery h2 {
+        background: #3a6ea5;
+        color: white;
+        padding: 20px;
+    }
+
+    /* Image hover effect */
+    .gallery img {
+        transition: 0.3s;
+    }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+

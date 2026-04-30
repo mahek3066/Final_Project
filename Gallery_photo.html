@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Photo Gallery</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="css/Gallery.css" />
+    
+</head>
+<body>
+    <!--header wil load heare-->
+    <div id="header-container"></div>
+
+    <!-- Main Header -->
+    <header id="h1">
+        <h1>Photo Gallery</h1>
+        <p>A collection of favorite moments</p>
+    </header>
+
+    <!-- College Events -->
+    <header id="h2">
+        <h2><i class="fa-solid fa-graduation-cap"></i> College Events</h2>
+    </header>
+
+    <!-- Gallery Container -->
+    <div class="container my-4">
+        <div id="gallery" class="gallery"></div>
+    </div>
+
+    <!-- Achievements -->
+    <header id="h3">
+        <h3><i class="fa-solid fa-award"></i> Achievements</h3>
+    </header>
+
+    <div class="container my-4">
+        <div id="achievements-gallery" class="gallery"></div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        <img id="lightboxImg" src="" alt="">
+    </div>
+
+    <!--footer-->
+    <div id="footer-container"></div>
+
+    <!--js-->
+    <script src="script.js"></script>
+
+<script>
+    function loadGalleryFromAdmin() {
+
+    const eventsGallery = document.getElementById("gallery");
+    const achievementsGallery = document.getElementById("achievements-gallery");
+
+    let images = JSON.parse(localStorage.getItem("Gallery_photo")) || [];
+
+    eventsGallery.innerHTML = "";
+    achievementsGallery.innerHTML = "";
+
+    images.forEach(img => {
+
+    const div = document.createElement("div");
+    div.className = "gallery-item";
+
+    div.innerHTML = `
+    <img src="${img.image}" alt="${img.caption}">
+    <div class="overlay">
+        <h5>${img.caption}</h5>
+    </div>
+    `;
+
+    div.addEventListener("click", () => {
+    document.getElementById("lightbox").classList.add("active");
+    document.getElementById("lightboxImg").src = img.image;
+    });
+
+    if (img.category === "Achievement") {
+    achievementsGallery.appendChild(div);
+    }
+
+        if (img.category === "College Event" || img.category === "College Event") {
+    eventsGallery.appendChild(div);
+    }
+
+    });
+    }
+    function closeLightbox() {
+        document.getElementById("lightbox").classList.remove("active");
+    }
+    window.onload = loadGalleryFromAdmin;
+    </script>
+</body>
+</html>

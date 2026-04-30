@@ -1,0 +1,68 @@
+﻿
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    text-align: center;
+}
+
+.hero {
+    background: #1e3d59;
+    color: white;
+    padding: 40px 20px;
+}
+
+.about {
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: auto;
+    color: #1e3d59;
+}
+
+.font {
+    color: #3a6ea5;
+}
+
+.gallery {
+    padding: 40px 20px;
+    background: white;
+}
+
+    .gallery h2 {
+        background: #3a6ea5;
+        color: white !important;
+        padding: 20px;
+    }
+
+    .gallery img {
+        transition: 0.3s;
+    }
+
+        .gallery img:hover {
+            transform: scale(1.05);
+        }
+
+.card-text {
+    font-size: 0.9rem;
+}
+
+.gallery-card {
+    transition: transform 0.3s ease;
+}
+
+    .gallery-card:hover {
+        transform: translateY(-5px); 
+    }
+
+.hover-zoom:hover {
+    transform: scale(1.1);
+}
+
+.img-wrapper {
+    background-color: #eee;
+}
+#lightboxImage {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}

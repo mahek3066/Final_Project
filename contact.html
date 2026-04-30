@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Contact Form</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <!--cssfile-->
+    <link href="css/contact.css" rel="stylesheet" />
+    
+</head>
+<body>
+    <!--header wil load heare-->
+    <div id="header-container"></div>
+
+    <!-- Page Header-->
+    <div class="page-header">
+        <h1>Contact Us</h1>
+    </div>
+    <!-- Toast Notification -->
+    <div class="toast-container">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i> Message Sent Successfully!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-md-12">
+                <div class="card contact-card border-0">
+                    <div class="row g-0">
+
+                        <!-- LEFT SECTION: Contact Information -->
+                        <div class="col-lg-5 col-md-6">
+                            <div class="contact-info-section h-100">
+                                <h3>Let's Talk</h3>
+                                <p>Whether you have a question,want to start simply want to connect.</p>
+                                <p>Feel free to send me a message in the contact form.</p>
+
+                                <div class="info-item">
+                                    <i class="fa-solid fa-phone"></i>
+                                    <div>
+                                        <small class="d-block text-white-50">Phone</small>
+                                        <span class="fw-bold">02844-228332</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <div>
+                                        <small class="d-block text-white-50">Email</small>
+                                        <span class="fw-bold">smtkbparekh@gmail.com</span>
+                                    </div>
+                                </div>
+
+                                <div class="info-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <small class="d-block text-white-50">Visit Us</small>
+                                        <span class="fw-bold">New Building, Gayatri Nagar Road,Mahuva</span>
+                                    </div>
+                                </div>
+
+                                <div class="social-links">
+                                    <a href="https://www.facebook.com/share/14XAhTsjEK1/"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="#"><i class="fab fa-twitter"></i></a>
+                                    <a href="https://www.linkedin.com/school/smt.-k.b.-parekh-b.c.a.-college/"><i class="fab fa-linkedin-in"></i></a>
+                                    <a href="https://www.instagram.com/parekh_college_mahuva?igsh=MXJjeDdsMTdkOGNoNg=="><i class="fab fa-instagram instagram-icon"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT SECTION: Input Form -->
+                        <div class="col-lg-7 col-md-6">
+
+                            <div class="user-form-section">
+                                <h3 class="mb-4 fw-bold text-dark">Send Message</h3>
+                                <form id="contactForm">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="floatingName" placeholder="Name" required>
+                                                <label for="floatingName">Your Name</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" id="floatingEmail" placeholder="Email" required>
+                                                <label for="floatingEmail">Email Address</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="floatingSubject" placeholder="Subject" required>
+                                            <label for="floatingSubject">Subject</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <div class="form-floating">
+                                            <textarea class="form-control" placeholder="Message" id="floatingMessage" style="height: 130px" required></textarea>
+                                            <label for="floatingMessage">Your Message</label>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn-submit">
+                                        Send Message <i class="fas fa-paper-plane ms-2"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--footer-->
+    <div id="footer-container"></div>
+
+    <!--js-->
+    <script src="script.js"></script>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const form = document.getElementById("contactForm");
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById("floatingName");
+                const email = document.getElementById("floatingEmail");
+                const subject = document.getElementById("floatingSubject");
+                const message = document.getElementById("floatingMessage");
+
+                let isValid = true;
+
+                clearValidation([name, email, subject, message]);
+
+                // NAME VALIDATION
+
+                if (name.value.trim() === "") {
+                    showError(name, "Name cannot be empty.");
+                    isValid = false;
+                } else if (!/^[A-Za-z\s]{3,}$/.test(name.value.trim())) {
+                    showError(name, "Name must contain only letters and be at least 3 characters.");
+                    isValid = false;
+                }
+
+                // EMAIL VALIDATION
+
+                if (email.value.trim() === "") {
+                    showError(email, "Email cannot be empty.");
+                    isValid = false;
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+                    showError(email, "Please enter a valid email address.");
+                    isValid = false;
+                }
+
+                // =============================
+                // SUBJECT VALIDATION
+                // =============================
+                if (subject.value.trim() === "") {
+                    showError(subject, "Subject cannot be empty.");
+                    isValid = false;
+                } else if (subject.value.trim().length < 5) {
+                    showError(subject, "Subject must be at least 5 characters.");
+                    isValid = false;
+                }
+
+                // =============================
+                // MESSAGE VALIDATION
+                // =============================
+                if (message.value.trim() === "") {
+                    showError(message, "Message cannot be empty.");
+                    isValid = false;
+                } else if (message.value.trim().length < 10) {
+                    showError(message, "Message must be at least 10 characters.");
+                    isValid = false;
+                }
+
+                // =============================
+                // FINAL CHECK
+                // =============================
+                if (isValid) {
+                    form.submit();
+                }
+
+            });
+
+            function showError(input, message) {
+                input.classList.add("is-invalid");
+
+                const feedback = document.createElement("div");
+                feedback.className = "invalid-feedback";
+                feedback.innerText = message;
+
+                input.parentElement.appendChild(feedback);
+            }
+
+            function clearValidation(inputs) {
+                inputs.forEach(function (input) {
+                    input.classList.remove("is-invalid");
+
+                    const feedback = input.parentElement.querySelector(".invalid-feedback");
+                    if (feedback) {
+                        feedback.remove();
+                    }
+                });
+            }
+
+        });
+    </script>
+</body>
+</html>

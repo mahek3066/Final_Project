@@ -1,0 +1,146 @@
+body {
+    font-family: 'Oswald', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+header {
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+}
+
+#h1 {
+    background-color: #1e3d59;
+}
+
+#h2 {
+    background-color: #3a6ea5;
+}
+
+#h3 {
+    background-color: #3a6ea5;
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Lightbox */
+.lightbox {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.9);
+}
+
+    .lightbox.active {
+        display: block;
+    }
+
+    .lightbox img {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 80vh;
+    }
+
+.close-btn {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    color: white;
+    font-size: 40px;
+    cursor: pointer;
+}
+
+
+/* Gallery styles */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px,300px));
+    justify-content: center;
+    gap: 20px;
+}
+
+/* .gallery-item {
+            width: 300px;
+            overflow: hidden;
+            border-radius: 10px;
+           }
+
+            
+                .gallery-item img {
+                    width: 100%;
+                    height: 200px;
+                    object-fit: cover;
+                    border-radius: 10px;
+                }*/
+.gallery-item {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+    .gallery-item img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+    }
+
+.overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+}
+
+.achievement-img {
+    width: 100%;
+    height: 250px;
+    border-radius: 12px;
+    display: block;
+    margin: 0 auto;
+    object-fit: cover;
+}
+/*.overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: white;
+            padding: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }*/
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .gallery {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,187 @@
+
+body {
+    background: #e6f2ff;
+    font-family: 'oswald',sans-serif;
+
+}
+
+/* html{
+    overflow: hidden;
+} */
+
+    .navbar {
+        background: #1e3d59;
+        color: white;
+        padding: 15px;
+        height: 10vh;
+    }
+    /* Logout Button Default Style */
+    .btn-light {
+        background-color: white !important;
+        color: #1e3d59 !important;
+        border: 1px solid white;
+        padding: 5px 15px;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: 0.3s;
+    }
+        /* Hover Effect */
+        .btn-light:hover {
+            background-color: #f1f1f1 !important;
+            color: #1e3d59 !important;
+            text-decoration: none;
+        }
+
+    .navbar a {
+        color: white;
+    }
+    /* Sidebar */
+
+   
+.sidebar {
+    height: 90vh;
+    width: 220px;
+    background: #1e3d59;
+    color: white;
+    padding-top: 20px;
+    margin-left:-15px;
+    top: 0;
+}
+
+
+        .sidebar a {
+            display: flex !important;
+            align-items: center !important;
+            padding: 10px 15px;
+            color: white;
+            text-decoration: none;
+            gap: 12px;
+            width: 100%;
+        }
+
+   
+            .sidebar a.active {
+                background: #3a6ea5 !important;
+                color: white !important;
+                border-radius: 6px;
+            }
+
+    .sidebar a:hover {
+        background: #3a6ea5;
+    }
+    /* Events Dropdown */
+    .submenu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        background: #244a6b;
+        display: none;
+    }
+
+
+        .submenu li a {
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .submenu li {
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+        }
+
+            .submenu li::before {
+                content:none;
+                color: white;
+                margin-right: 8px;
+                font-size: 20px;
+            }
+
+    .dropdown:hover .submenu {
+        display: block;
+    }
+
+    .dropdown a {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+    }
+
+    .dropdown-link {
+        display: flex !important;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+        .dropdown-link span {
+            flex: 1;
+        }
+
+    .dropdown-toggle {
+        display: flex !important;
+        justify-content: space-between !important;
+        width: 100%;
+    }
+
+        .dropdown-toggle span {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+    .arrow {
+        margin-left: auto;
+    }
+    
+.content-area {
+    flex: 1;
+    padding: 20px;
+    background: #e6f2ff;
+    min-height: 100vh;
+}
+
+#main-content {
+    height: 90vh;        
+    overflow-y: auto;   
+    overflow-x: hidden;
+}
+
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: white;
+    margin-bottom: 20px;
+
+}
+
+    .icon-box {
+        font-size: 30px;
+        color: #1e3d59;
+    }
+
+
+
+/* Modal Background */
+.modal-custom {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); 
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal Box */
+.modal-box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
